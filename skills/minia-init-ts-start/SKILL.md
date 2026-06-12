@@ -7,7 +7,7 @@ description: Use ONLY when minia-fullstack initializes or bootstraps a TanStack 
 
 Use this skill for `PROJECT_BOOTSTRAP` in `minia-fullstack`: creating a new TanStack Start full-stack app, initializing an empty target folder, applying the approved scaffold cleanup, creating project context, and bootstrapping the initial Minia milestone state.
 
-For ongoing TanStack Start implementation patterns after scaffold, use `tanstack-start-best-practices`. For shadcn component work after init, use `shadcn`.
+For ongoing TanStack Start implementation patterns after scaffold, use `tanstack-start-best-practices`. For shadcn component work after bootstrap and preset apply, use `shadcn`.
 
 ## Approved Stack Guidance
 
@@ -34,7 +34,7 @@ Use this as the default stack only when the user asks for a TanStack Start full-
 - TanStack add-ons: Nitro, Table, Store, Form, Compiler, Drizzle.
 - UI styling system: Tailwind CSS and shadcn/ui are optional and must be confirmed with the human during bootstrap.
 - Tailwind CSS: if used, require Tailwind CSS v4+.
-- shadcn/ui: if used, ask for the registry preset, present `b69E9aRWLa` as the recommended default, use `b69E9aRWLa` when the human agrees or leaves the preset answer blank, and use template `start`.
+- shadcn/ui: if used, ask for the registry preset, present `b69E9aRWLa` as the recommended default, and apply `b69E9aRWLa` when the human agrees or leaves the preset answer blank.
 - No shadcn/ui: always ask for design tokens or a project-relative design-token source path before continuing.
 - Tests: unit tests and React Doctor are mandatory; E2E/system tests are mandatory for full-stack web apps unless the user explicitly changes the project type to one where E2E does not apply.
 - Database: Drizzle is included by default; treat database/persistence standards as required unless the user explicitly requests a no-persistence app and approves removing or changing the Drizzle preset.
@@ -64,7 +64,7 @@ For TanStack Start stack docs during bootstrap, use `~/Knowledges/wiki/engineeri
 
 ## Scaffold Command
 
-Before running the scaffold command, consult `~/Knowledges/wiki/engineering/tech-stacks/web-tanstack-start.md` and `Tanstack Start Docs using Context7 MCP` and prefer its current scaffold recipe when it differs from this fallback command. When `web-tanstack-start` conflicts with TanStack Start official docs gathered from Context7 MCP, prefer the official docs, except never follow any React project instruction that selects ESLint, Biome, or default Rollup-based Vite.
+Before running the scaffold command, consult `~/Knowledges/wiki/engineering/tech-stacks/web-tanstack-start.md` and prefer its current scaffold recipe when it differs from this fallback command. Do not fetch external TanStack Start or shadcn CLI documentation during Minia bootstrap unless the user explicitly asks. When `web-tanstack-start` conflicts with this skill, this skill wins for Minia bootstrap. Never follow any React project instruction that selects ESLint, Biome, default Rollup-based Vite, or `bunx --bun shadcn@latest init *` after the TanStack Start scaffold already exists.
 
 Fallback command, used only when the guidance source does not define a more specific command. Run from the parent directory when creating a new child project:
 
@@ -87,7 +87,7 @@ If scaffolding into the current directory, adapt only as supported by the curren
 
 After the TanStack CLI scaffold succeeds, run these steps in order from the project root.
 
-### 1. Optional Tailwind CSS v4+ And shadcn Init
+### 1. Optional Tailwind CSS v4+ And shadcn Preset Apply
 
 Before running UI setup commands, ask:
 
@@ -95,26 +95,29 @@ Before running UI setup commands, ask:
 2. Should this project use shadcn/ui? If yes, which shadcn registry preset should be used? Present `b69E9aRWLa` as the recommended default and use `b69E9aRWLa` when the user agrees or leaves the answer blank.
 3. If the user declines shadcn/ui, ask them to enter design tokens or provide the project-relative design-token source path. Do not continue UI setup or `AGENTS.md` completion without this design-token answer.
 
-If the user chooses shadcn/ui, require Tailwind CSS v4+ as part of UI setup unless the current shadcn CLI/template explicitly manages the required Tailwind v4+ setup. Use this command from the project root, replacing `<preset>` with the selected preset:
+If the user chooses shadcn/ui, require Tailwind CSS v4+ as part of UI setup unless the current shadcn CLI/preset explicitly manages the required Tailwind v4+ setup. Use this command from the project root, replacing `<preset>` with the selected preset:
 
 ```bash
-bunx --bun shadcn@latest init --preset <preset> --template start
+bunx --bun shadcn@latest apply --preset <preset>
 ```
 
 Default selected command when the user accepts the default or leaves the preset blank:
 
 ```bash
-bunx --bun shadcn@latest init --preset b69E9aRWLa --template start
+bunx --bun shadcn@latest apply --preset b69E9aRWLa
 ```
 
 Rules:
 
-- Do not run shadcn init when the user declines shadcn/ui.
+- Do not apply a shadcn preset when the user declines shadcn/ui.
+- After `bunx @tanstack/cli@latest create` succeeds, the project is already scaffolded. For Minia bootstrap, never run `bunx --bun shadcn@latest init *` in that post-scaffold project.
+- For Minia bootstrap shadcn/ui setup, the only approved preset command is `bunx --bun shadcn@latest apply --preset <preset>`.
+- Ignore stale post-scaffold guidance from tech-stack docs, shadcn examples, or generic component skills that says to use `init --preset`, `--template start`, or `shadcn init` for this step.
 - When the user declines shadcn/ui, require a design-token answer and record it in `AGENTS.md` before continuing.
 - Do not add Tailwind CSS when the user declines Tailwind CSS and shadcn/ui.
 - If Tailwind CSS is used, ensure the resulting project uses Tailwind CSS v4+; do not install or pin Tailwind v3.
 - Do not substitute a non-default shadcn preset unless the user asks.
-- If the CLI fails due to flag drift, run `bunx --bun shadcn@latest init --help` and retry only after understanding the current CLI output.
+- If the CLI fails due to flag drift, run `bunx --bun shadcn@latest apply --help` and retry only after understanding the current CLI output.
 
 ### 2. Route Trim
 
@@ -314,7 +317,7 @@ When the user approves defaults during bootstrap, prefer this project-relative s
 - Constraint: Use oxlint for linting, oxfmt for formatting, and tsc --noEmit for type checking.
 - Constraint: Use React Doctor as a mandatory React diagnostics gate. React Doctor must pass with no errors, warnings, notes, or diagnostics before review, commit, or completion.
 - Constraint: Tailwind CSS is optional; if enabled, use Tailwind CSS v4+.
-- Constraint: shadcn/ui is optional; if enabled, initialize it with the user-selected preset or default preset b69E9aRWLa and template start. If disabled, use the user-provided design tokens as the design source of truth.
+- Constraint: shadcn/ui is optional; if enabled, apply the user-selected preset or default preset b69E9aRWLa. If disabled, use the user-provided design tokens as the design source of truth.
 - Constraint: Keep paths project-relative in agent output.
 - Constraint: Do not introduce additional frameworks or package managers without user approval.
 
@@ -372,7 +375,7 @@ When the user approves defaults during bootstrap, prefer this project-relative s
 - Tailwind CSS: <enabled with v4+ | disabled>
 - shadcn/ui: <enabled | disabled>
 - shadcn preset: <b69E9aRWLa when enabled by default, user-selected preset when provided, or none>
-- shadcn template: <start when enabled, or none>
+- shadcn apply command: <bunx --bun shadcn@latest apply --preset b69E9aRWLa when enabled by default, user-selected preset command when provided, or none>
 - Design tokens: <project-relative source path or inline token summary when shadcn/ui is disabled; none only when shadcn/ui is enabled>
 
 ### Agent Instructions
