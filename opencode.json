@@ -3,6 +3,9 @@
   "permission": {
       "skill": {
           "*": "allow",
+      },
+      "external_directory": {
+          "~/Knowledges/wiki/engineering/**": "allow"
       }
   },
   "agent": {
